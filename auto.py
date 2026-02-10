@@ -5,9 +5,7 @@ import keyboard
 import threading
 
 # Inicia o exe
-app = Application(backend="uia").start(
-    r"C:/Program Files (x86)/Softcom Tecnologia/SPED/SPED.exe"
-)
+app = Application(backend="uia").start(r"./SPED.exe")
 
 # Conecta na janela principal pelo título
 win = Desktop(backend="uia").window(title_re="SPED -.*")
@@ -120,5 +118,3 @@ while app.is_process_running():
     time.sleep(0.1)  # Check every 100ms
 
 print("SPED.exe fechado. Saindo do script.")
-
-
