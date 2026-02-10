@@ -1,0 +1,13 @@
+# Adicione arquivos/pastas que não devem ser copiados para outros computadores
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.log
+*.bak
+*.swp
+*.tmp
+.DS_Store
+Thumbs.db
