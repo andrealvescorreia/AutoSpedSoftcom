@@ -18,6 +18,10 @@ Sistema de automação para o SPED da Softcom Tecnologia que facilita processos 
 
 `pip install -r requirements.txt`
 
+### Alterar dependencias
+
+`pip freeze > requirements.txt`
+
 ## Gerar arquivo executavel
 
 `pyinstaller --onefile --windowed --name "SPED-Auto" auto.py`
