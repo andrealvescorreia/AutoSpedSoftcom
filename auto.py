@@ -3,6 +3,7 @@ from pywinauto import Desktop
 import time
 import keyboard
 import threading
+from pywinauto.keyboard import SendKeys
 
 # Inicia o exe
 app = Application(backend="uia").start(r"./SPED.exe")
@@ -27,17 +28,49 @@ def auto_login():
     win.type_keys("7711")
     win.child_window(title="Logar", control_type="Button").click_input()
 
+def corrigir_pis_cofins(window):
+    window.set_focus()
+    window.child_window(title_re=".*Pis/COFINS", control_type="TabItem").click_input()
+    window.child_window(control_type="ComboBox", auto_id="cbSdPisCofinsGrupoReceita").click_input()
+    time.sleep(0.5)
+    SendKeys("{DOWN}{ENTER}")
+
+    window.child_window(control_type="ComboBox", auto_id="cbSdPisCofinsNaturezaReceita").click_input()
+    time.sleep(0.5)
+
+    SendKeys("{DOWN}{ENTER}")
+    window.child_window(title="Salvar", control_type="Button").click_input()
+    clicar_quando_aparecer(window, "OK")
+
+
 
 def clicar_quando_aparecer(window, titulo, timeout=10):
     tempo_inicio = time.time()
     while time.time() - tempo_inicio < timeout:
         try:
             button = window.child_window(title=titulo, control_type="Button")
-            button.click_input()
-            print(f"Botão '{titulo}' clicado!")
-            return True
-        except:
-            time.sleep(0.5)  # Espera 500ms antes de tentar novamente
+            if button.exists(timeout=0.2):
+                try:
+                    message_elem = window.child_window(
+                        title_re="Código Natureza inválido.*", control_type="Text"
+                    )
+                    message = (
+                        message_elem.window_text() if message_elem.exists(timeout=0.2) else ""
+                    )
+
+                except Exception:
+                    message = ""
+                finally:
+                    button.click_input()
+                    time.sleep(0.1)
+                if message:
+                    corrigir_pis_cofins(window)
+                    print(f"Botão '{titulo}' clicado! Mensagem: {message}")
+                else:
+                    print(f"Botão '{titulo}' clicado!")
+                return True
+        except Exception:
+            time.sleep(0.3)  # Espera 300ms antes de tentar novamente
     print(f"Botão '{titulo}' não apareceu após {timeout}s")
     return False
 
