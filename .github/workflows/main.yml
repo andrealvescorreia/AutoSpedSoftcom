@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -37,7 +39,7 @@ jobs:
 
     - name: Build executable
       run: |
-        pyinstaller ${{ env.MAIN_PY_FILE }}
+        pyinstaller --onefile ${{ env.MAIN_PY_FILE }}
       working-directory: ./
 
     - name: Create Artifact (Windows)
@@ -49,3 +51,11 @@ jobs:
 
     - name: List files in dist folder
       run: ls -R ./dist/
+
+    - name: Create GitHub Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: dist/auto.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
