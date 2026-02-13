@@ -53,14 +53,14 @@ def clicar_quando_aparecer(window, titulo, timeout=10):
     while time.time() - tempo_inicio < timeout:
         try:
             button = window.child_window(title=titulo, control_type="Button")
-            if button.exists(timeout=0.2):
+            if button.exists(timeout=0.1):
                 try:
                     message_elem = window.child_window(
                         title_re="Código Natureza inválido.*", control_type="Text"
                     )
                     message = (
                         message_elem.window_text()
-                        if message_elem.exists(timeout=0.2)
+                        if message_elem.exists(timeout=0.1)
                         else ""
                     )
 
@@ -86,7 +86,7 @@ def corrigirCest(window):
     time.sleep(0.1)
     # Clica na Lupa
     window.child_window(auto_id="btnPesquisarCEST").click_input()
-    time.sleep(0.2)
+    time.sleep(0.1)
     try:
         # Clica duas vezes no primeiro cest
         cest1 = window.child_window(title="CEST Linha 1", control_type="DataItem")
@@ -136,7 +136,7 @@ def executar_loop():
             # Clica em Corrigir
             window.type_keys("{SPACE}")
             corrigirCest(window)
-            time.sleep(0.2)
+            time.sleep(0.1)
         except Exception as e:
             print(f"Erro no loop: {e}")
             time.sleep(1)
