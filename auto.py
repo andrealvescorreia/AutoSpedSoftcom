@@ -28,20 +28,24 @@ def auto_login():
     win.type_keys("7711")
     win.child_window(title="Logar", control_type="Button").click_input()
 
+
 def corrigir_pis_cofins(window):
     window.set_focus()
     window.child_window(title_re=".*Pis/COFINS", control_type="TabItem").click_input()
-    window.child_window(control_type="ComboBox", auto_id="cbSdPisCofinsGrupoReceita").click_input()
-    time.sleep(0.5)
+    window.child_window(
+        control_type="ComboBox", auto_id="cbSdPisCofinsGrupoReceita"
+    ).click_input()
+    time.sleep(0.4)
     SendKeys("{DOWN}{ENTER}")
 
-    window.child_window(control_type="ComboBox", auto_id="cbSdPisCofinsNaturezaReceita").click_input()
-    time.sleep(0.5)
+    window.child_window(
+        control_type="ComboBox", auto_id="cbSdPisCofinsNaturezaReceita"
+    ).click_input()
+    time.sleep(0.4)
 
     SendKeys("{DOWN}{ENTER}")
     window.child_window(title="Salvar", control_type="Button").click_input()
     clicar_quando_aparecer(window, "OK")
-
 
 
 def clicar_quando_aparecer(window, titulo, timeout=10):
@@ -55,7 +59,9 @@ def clicar_quando_aparecer(window, titulo, timeout=10):
                         title_re="Código Natureza inválido.*", control_type="Text"
                     )
                     message = (
-                        message_elem.window_text() if message_elem.exists(timeout=0.2) else ""
+                        message_elem.window_text()
+                        if message_elem.exists(timeout=0.2)
+                        else ""
                     )
 
                 except Exception:
@@ -77,10 +83,10 @@ def clicar_quando_aparecer(window, titulo, timeout=10):
 
 def corrigirCest(window):
     window.set_focus()
-    time.sleep(0.4)
+    time.sleep(0.1)
     # Clica na Lupa
     window.child_window(auto_id="btnPesquisarCEST").click_input()
-    time.sleep(0.5)
+    time.sleep(0.2)
     try:
         # Clica duas vezes no primeiro cest
         cest1 = window.child_window(title="CEST Linha 1", control_type="DataItem")
@@ -130,7 +136,7 @@ def executar_loop():
             # Clica em Corrigir
             window.type_keys("{SPACE}")
             corrigirCest(window)
-            time.sleep(1)
+            time.sleep(0.2)
         except Exception as e:
             print(f"Erro no loop: {e}")
             time.sleep(1)
