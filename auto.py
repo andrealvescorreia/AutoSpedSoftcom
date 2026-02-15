@@ -35,13 +35,11 @@ def corrigir_pis_cofins(window):
     window.child_window(
         control_type="ComboBox", auto_id="cbSdPisCofinsGrupoReceita"
     ).click_input()
-    time.sleep(0.4)
     SendKeys("{DOWN}{ENTER}")
 
     window.child_window(
         control_type="ComboBox", auto_id="cbSdPisCofinsNaturezaReceita"
     ).click_input()
-    time.sleep(0.4)
 
     SendKeys("{DOWN}{ENTER}")
     window.child_window(title="Salvar", control_type="Button").click_input()
@@ -51,16 +49,17 @@ def corrigir_pis_cofins(window):
 def clicar_quando_aparecer(window, titulo, timeout=10):
     tempo_inicio = time.time()
     while time.time() - tempo_inicio < timeout:
+        time.sleep(0.01)
         try:
             button = window.child_window(title=titulo, control_type="Button")
-            if button.exists(timeout=0.1):
+            if button.exists():
                 try:
                     message_elem = window.child_window(
                         title_re="Código Natureza inválido.*", control_type="Text"
                     )
                     message = (
                         message_elem.window_text()
-                        if message_elem.exists(timeout=0.1)
+                        if message_elem.exists()
                         else ""
                     )
 
@@ -68,7 +67,6 @@ def clicar_quando_aparecer(window, titulo, timeout=10):
                     message = ""
                 finally:
                     button.click_input()
-                    time.sleep(0.1)
                 if message:
                     corrigir_pis_cofins(window)
                     print(f"Botão '{titulo}' clicado! Mensagem: {message}")
@@ -76,24 +74,21 @@ def clicar_quando_aparecer(window, titulo, timeout=10):
                     print(f"Botão '{titulo}' clicado!")
                 return True
         except Exception:
-            time.sleep(0.3)  # Espera 300ms antes de tentar novamente
+            time.sleep(0.02) # Espera um pouco antes de tentar novamente
     print(f"Botão '{titulo}' não apareceu após {timeout}s")
     return False
 
 
 def corrigirCest(window):
     window.set_focus()
-    time.sleep(0.1)
     # Clica na Lupa
     window.child_window(auto_id="btnPesquisarCEST").click_input()
-    time.sleep(0.1)
     try:
         # Clica duas vezes no primeiro cest
         cest1 = window.child_window(title="CEST Linha 1", control_type="DataItem")
         cest1.double_click_input()
     except:
         # Caso não tenha cest, clica em "Sem Cest"
-        print("CEST Linha 1 not found, trying CEST Linha 0")
         cest0 = window.child_window(title="CEST Linha 0", control_type="DataItem")
         cest0.double_click_input()
     window.child_window(title="Salvar", control_type="Button").click_input()
@@ -116,13 +111,13 @@ def toggle_and_run_loop():
     if loop_running:
         print("Loop INICIADO! Pressione F4 novamente para parar.")
         # Inicia o loop em uma thread separada
-        loop_thread = threading.Thread(target=executar_loop, daemon=True)
+        loop_thread = threading.Thread(target=executar_loop_correcao, daemon=True)
         loop_thread.start()
     else:
         print("Loop PARADO!")
 
 
-def executar_loop():
+def executar_loop_correcao():
     global loop_running
     window = Desktop(backend="uia").window(
         title_re=".*Validação.*", control_type="Window"
@@ -136,10 +131,9 @@ def executar_loop():
             # Clica em Corrigir
             window.type_keys("{SPACE}")
             corrigirCest(window)
-            time.sleep(0.1)
         except Exception as e:
             print(f"Erro no loop: {e}")
-            time.sleep(1)
+            time.sleep(0.3)
     print("Loop finalizado.")
 
 
