@@ -5,12 +5,31 @@ import keyboard
 import threading
 from pywinauto.keyboard import SendKeys
 
-# Inicia o exe
-app = Application(backend="uia").start(r"./SPED.exe")
 
-# Conecta na janela principal pelo título
-win = Desktop(backend="uia").window(title_re="SPED -.*")
-win.set_focus()
+def abrir_sped(timeout=10):
+    app_iniciado = Application(backend="uia").start(r"./SPED.exe")
+    janela_principal = Desktop(backend="uia").window(title_re="SPED -.*")
+    janela_principal.wait("visible ready", timeout=timeout)
+    janela_principal.set_focus()
+    print("SPED.exe não estava aberto. Aplicação iniciada automaticamente.")
+    return app_iniciado, janela_principal
+
+
+def conectar_sped_em_execucao(timeout=10):
+    try:
+        janela_principal = Desktop(backend="uia").window(title_re="SPED -.*")
+        janela_principal.wait("visible ready", timeout=timeout)
+        app_conectado = Application(backend="uia").connect(
+            process=janela_principal.process_id()
+        )
+        janela_principal.set_focus()
+        print("Conectado ao SPED já em execução.")
+        return app_conectado, janela_principal
+    except Exception:
+        return abrir_sped(timeout=timeout)
+
+
+app, win = conectar_sped_em_execucao()
 
 
 def print_ids():
